@@ -1,0 +1,19 @@
+{
+  "name": "moment3.1_dt207g",
+  "version": "1.0.0",
+  "description": "",
+  "main": "servern.js",
+  "scripts": {
+    "start": "nodemon server.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+    "dependencies": {
+    "express": "^5.2.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.14"
+  }
+}

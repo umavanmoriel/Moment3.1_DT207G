@@ -41,7 +41,7 @@ const experienceSchema = new mongoose.Schema({
 })
 
 //Inkluderar schema för Arbetserfarenheter i databas
-const Experience = mongoose.model("Experience", experienceSchema);
+const Experience = mongoose.model("Experience", experienceSchema, "experience");
 
 
 //Routes
@@ -112,6 +112,62 @@ app.post('/experience', async (req, res) => {
     }
 });
 
+
+// UPDATE - Uppdatera en erfarenhet efter Id
+app.put('/experience/:id', async (req, res) => {
+    const { company, position, startDate, endDate,location } = req.body;
+    const id = req.params.id;
+
+    // Skapar en tom array för att samla alla errors
+    let errors = [];
+
+    // Validering - alla fält måste fyllas i (förutom endDate, location)
+    if (!company || !position || !startDate) {
+        errors.push('Företag, position, startdatum och beskrivning måste fyllas i');
+    }
+
+    // Kontrollerar att företagsnamn inte har specialtecken
+    if (/[!@#$%^&*()]/.test(company)) {
+        errors.push('Företagsnamn får inte innehålla specialtecken som !@#$%^&*()');
+    }
+
+    // Om valideringsfel returnerar errors array
+    if (errors.length > 0) {
+        return res.status(400).json({ errors });
+    }
+
+    try {
+        const experience = await Experience.findByIdAndUpdate(
+            id,
+            {
+                company,
+                position,
+                startDate,
+                endDate: endDate || null,
+                location: location || ''
+            },
+            { returnDocument: 'after', runValidators: true } 
+        );
+
+        if (!experience) {
+            return res.status(404).json({ error: 'Erfarenhet hittades inte' });
+        }
+
+        res.json({ 
+            message: 'Erfarenhet uppdaterad',
+            data: experience
+        });
+    } catch (error) {
+        if (error.name === 'ValidationError') {
+            const errors = Object.values(error.errors).map(err => err.message);
+            return res.status(400).json({ errors });
+        }
+        res.status(500).json({ error: error.message });
+    }
+});
+
+
+// Starta servern på angiven port
 app.listen(port, () => {
     console.log('Server is running on port: ' + port);
 })

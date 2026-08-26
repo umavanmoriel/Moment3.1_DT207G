@@ -4,7 +4,7 @@ const mongoose = require("mongoose");
 
 //Initierar express
 const app = express();
-const port = process.env.Port || 3000;
+const port = process.env.PORT || 3000;
 
 app.use(cors());
 app.use(express.json());
@@ -16,19 +16,19 @@ mongoose.connect("mongodb://localhost:27017/arbetserfarenhet_db").then(() => {
     console.log("Error connecting to database: " + error);
 })
 
-//Arbetserfarenheter Schema
+//Skapar schema för Arbetserfarenheter
 const experienceSchema = new mongoose.Schema({
     company: {
         type: String,
-        reguired: true
+        required: [true, "Du måste fylla i fält"]
     },
     position : {
         type: String,
-        required: true
+        required: [true, "Du måste fylla i fält"]
     },
     startDate: {
         type: Date,
-        required: true
+        required: [true, "Du måste fylla i fält"]
     },
     endDate: {
         type: Date,
@@ -40,6 +40,78 @@ const experienceSchema = new mongoose.Schema({
     }
 })
 
-//Inkluderar Schema i databas
+//Inkluderar schema för Arbetserfarenheter i databas
 const Experience = mongoose.model("Experience", experienceSchema);
 
+
+//Routes
+
+
+app.get("/api", async (req,res) => {
+    res.json({message: "Welcome to this API"});
+})
+
+// READ - Hämta info om alla arbetserfarenheterr från collection experience
+app.get("/experience", async (req,res) => {
+    try {
+        let result = await Experience.find({});
+
+        return res.json(result);
+    } catch (error) {
+        return res.status(500).json(error );
+    }
+})
+
+
+// CREATE - Lägg till ny erfarenhet
+app.post('/experience', async (req, res) => {
+    // Hämtar info från body
+    const { company, position, startDate, endDate, location } = req.body;
+
+    // Skapar en tom array för att samla alla errors
+    let errors = [];
+
+    // Validering - alla fält måste fyllas i (förutom endDate, location)
+    if (!company || !position || !startDate) {
+        errors.push('Företag, position, startdatum  måste fyllas i');
+    }
+
+    // Kontrollerar att företagsnamn inte har specialtecken
+    if (/[!@#$%^&*()]/.test(company)) {
+        errors.push('Företagsnamn får inte innehålla specialtecken som !@#$%^&*()');
+    }
+
+    // Om valideringsfel returnerar errors array
+    if (errors.length > 0) {
+        return res.status(400).json({ errors });
+    }
+
+    try {
+        // Skapar ny erfarenhet
+        const experience = new Experience({
+            company,
+            position,
+            startDate,
+            endDate: endDate || null,
+            location: location || ''
+        });
+
+            await experience.save();
+        
+        res.status(201).json({ 
+            message: 'Ny erfarenhet är sparad',
+            data: experience
+        });
+    } catch (error) {
+        // Hanterar valideringsfel från Mongoose
+        if (error.name === 'ValidationError') {
+            const errors = Object.values(error.errors).map(err => err.message);
+            return res.status(400).json({ errors });
+        }
+        res.status(500).json({ error: error.message });
+    }
+});
+
+app.listen(port, () => {
+    console.log('Server is running on port: ' + port);
+})

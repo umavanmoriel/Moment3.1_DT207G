@@ -166,6 +166,25 @@ app.put('/experience/:id', async (req, res) => {
     }
 });
 
+// DELETE - Ta bort en erfarenhet efter Id
+app.delete('/experience/:id', async (req, res) => {
+
+    try {
+        // Försöker hitta och ta bort erfarenheten med Id då returneras felmeddelande med status 404 - Not Found
+        const experience = await Experience.findByIdAndDelete(req.params.id);
+
+        // Om ingen erfarenhet hittades med det Id
+        if (!experience) {
+            return res.status(404).json({ error: 'Erfarenhet med angivet ID finns inte' });
+        }
+
+        //Skickar bekräftelse til användaren om erfarenhet togs bort
+        res.json({ message: 'Erfarenhet borttagen' });
+    } catch (error) {
+        //Om fel uppstår returnerar fel 500 - Internal Server Error
+        res.status(500).json({ error: error.message });
+    }
+});
 
 // Starta servern på angiven port
 app.listen(port, () => {

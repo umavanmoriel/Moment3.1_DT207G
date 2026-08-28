@@ -11,7 +11,7 @@ APIet använder **MongoDB** som NoSQL-databas med **Mongoose** som ODM (Object D
 
 1. **Klona repositoryt:**
 
-git clone [https://github.com/umavanmoriel/Moment3.1_DT207G.git](https://github.com/umavanmoriel/Moment3.1_DT207G.git)
+     git clone [https://github.com/umavanmoriel/Moment3.1_DT207G.git](https://github.com/umavanmoriel/Moment3.1_DT207G.git)
 
 2. **Installera nödvändiga npm-paket: express, cors, mongoose, nodemon 
 

@@ -24,6 +24,7 @@ APIet använder **MongoDB** som NoSQL-databas med **Mongoose** som ODM (Object D
 4. **Starta servern (i en annan terminal)**
 
    cd ~/Moment3.1_DT207G
+   
    node server.js
 
 

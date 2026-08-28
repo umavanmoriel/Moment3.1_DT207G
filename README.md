@@ -49,8 +49,11 @@ Nedan finns beskrivet hur man når APIet på olika vis:
 | **PUT** | `/experience/:id` | Uppdaterar en existerande erfarenhet med angivet ID. Kräver att ett erfarenhet - objekt skickas med i body. |
 | **DELETE** | `/experience/:id` | Raderar en erfarenhet med angivet ID. |
 
-###Ett objekt returneras/skickas som JSON med följande struktur:
+### Exempel på erfarenhet-objekt (JSON)
 
+Ett erfarenhet - objekt returneras/skickas som JSON med följande struktur:
+
+```json
 {
   "company": "Google",
   "position": "Software Engineer",
